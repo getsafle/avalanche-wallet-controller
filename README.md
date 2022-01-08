@@ -66,3 +66,18 @@ const signedMsg = await avalancheController.signMessage(msgParams);
 ```
 const signedData = await avalancheController.signTypedMessage (msgParams);
 ```
+
+#### Raw transaction object
+
+```
+rawTx: {
+  to, // receiver address
+  from, // sender address
+  value, // amount to send
+  gas, // gas Limit of transaction
+  gasPrice, // gasPrice
+  data, // data in hex to send
+  nonce, // transaction nonce
+  chainId, // chainID | 43113 - TESTNET, 43114 - MAINNET [AVALANCHE C-chain]
+}
+```
