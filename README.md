@@ -64,7 +64,7 @@ const signedMsg = await avalancheController.signMessage(msgParams);
 ### Sign Typed Data (EIP-712)
 
 ```
-const signedData = await avalancheController.signTypedMessage (msgParams);
+const signedData = await avalancheController.signTypedMessage(msgParams);
 ```
 
 #### Raw transaction object
@@ -80,4 +80,10 @@ rawTx: {
   nonce, // transaction nonce
   chainId, // chainID | 43113 - TESTNET, 43114 - MAINNET [AVALANCHE C-chain]
 }
+```
+
+### Get balance
+
+```
+const balance = await getBalance(address, web3);
 ```
