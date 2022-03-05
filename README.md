@@ -61,6 +61,12 @@ const signedTx = await avalancheController.signTransaction(avalancheTx, _fromAdd
 const signedMsg = await avalancheController.signMessage(msgParams);
 ```
 
+### Sign a message
+
+```
+const signedObj = await avalancheController.sign(msgParams, pvtKey, web3Obj);
+```
+
 ### Sign Typed Data (EIP-712)
 
 ```
