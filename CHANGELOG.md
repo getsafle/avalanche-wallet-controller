@@ -21,3 +21,10 @@
 ##### Implement sign functionality
 
 - Added sign() to sign a message or transaction and get signature along with v,r,s.
+
+### 1.2.1 (2023-11-28)
+
+##### Implemented Type2 Transaction Signing
+
+- Updated signTransaction() to sign type 2 transactions.
+
