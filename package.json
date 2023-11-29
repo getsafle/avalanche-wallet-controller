@@ -1,6 +1,6 @@
 {
   "name": "@getsafle/vault-avalanche-controller",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "Avalanche controller for safle vault.",
   "engines": {
     "node": ">= 10"

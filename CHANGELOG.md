@@ -21,3 +21,9 @@
 ##### Implement sign functionality
 
 - Added sign() to sign a message or transaction and get signature along with v,r,s.
+
+### 1.2.2(2023-11-29)
+
+##### Updated README.md
+
+- updated README.md and added badges. 
