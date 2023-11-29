@@ -31,13 +31,8 @@
 
 ### 1.2.1 (2023-11-28)
 
-##### Implemented Type2 Transaction Signing
+##### Implemented Type2 Transaction Signing and Updated readme
 
 - Updated signTransaction() to sign type 2 transactions.
 
-
-### 1.2.2(2023-11-29)
-
-##### Updated README.md
-
-- updated README.md and added badges. 
+- Updated README.md and added badges. 
