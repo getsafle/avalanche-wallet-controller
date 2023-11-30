@@ -36,3 +36,5 @@
 - Added the tests for getFees() in test suite. 
 
 - Updated import wallet with Ox prefix slicing.
+
+- Updated CI for coverage report
