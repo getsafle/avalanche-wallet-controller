@@ -544,9 +544,9 @@ class KeyringController extends EventEmitter {
         );
         const cchain = avalanche.CChain();
 
-        let baseFee = parseInt(await cchain.getBaseFee(), 16) / 1e9
+        let baseFee = parseInt(await cchain.getBaseFee(), 16) 
 
-        let maxPriorityFeePerGas = parseInt(await cchain.getMaxPriorityFeePerGas(), 16) / 1e9
+        let maxPriorityFeePerGas = parseInt(await cchain.getMaxPriorityFeePerGas(), 16) 
         let maxFeePerGas = baseFee + maxPriorityFeePerGas;
 
         if (maxFeePerGas < maxPriorityFeePerGas) {
