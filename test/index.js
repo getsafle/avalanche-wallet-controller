@@ -116,6 +116,19 @@ describe('Initialize wallet ', () => {
         const balance = await getBalance(accounts[0], web3)
         console.log(" get balance ", balance, accounts)
     })
+    it("Get fees for rawTransaction", async () => {
+        const accounts = await avalancheKeyring.getAccounts()
+        const web3 = new Web3(TESTNET.URL);
+        const avalancheTx = {
+            from: accounts[0],
+            to:'0x641BB2596D8c0b32471260712566BF933a2f1a8e',
+            value:100000000000000,
+            data:'0x00'
+        }
+        const fees = await avalancheKeyring.getFees(avalancheTx, web3)
+        console.log(" fees for the transaction ", fees)
+
+    })
     it("sign Transaction ", async () => {
 
         const accounts = await avalancheKeyring.getAccounts()

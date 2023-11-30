@@ -30,3 +30,7 @@
 - Updated signTransaction() to sign type 2 transactions.
 
 - Updated README.md and added badges. 
+
+- Updated getFees() method for gas estimation for type-2 transaction.
+
+- Added the tests for getFees() in test suite. 

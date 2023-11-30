@@ -13,6 +13,8 @@ const { normalize: normalizeAddress } = require('eth-sig-util')
 const SimpleKeyring = require('eth-simple-keyring')
 const HdKeyring = require('eth-hd-keyring')
 
+const Avalanche = require("avalanche").Avalanche;
+
 const keyringTypes = [
     SimpleKeyring,
     HdKeyring,
@@ -520,12 +522,47 @@ class KeyringController extends EventEmitter {
         }
     }
 
-    async getFees(avalancheTx, web3) {
-        const { from, to, value, data, gasLimit } = avalancheTx
-        const estimate = gasLimit ? gasLimit : await web3.eth.estimateGas({ to, from, value, data })
-        const gasPrice = await web3.eth.getGasPrice();
-        return { transactionFees: estimate * gasPrice }
+    /**
+     * get Fees method to get the fees for reqiured chainId for avalanche
+     *
+     * returns the object having gasLimit and fees for the block
+     *
+     * @param {Object} rawTx - Rawtransaction - {from,to,value,data}  
+     * @param {Object} web3 - web3 object.
+     * @returns {Object} - gasLimit for the transaction and {maxFeePerGas,maxPriorityFeePerGas} for the transaction
+     */
+
+    async getFees(rawTx, web3) {
+
+        const { from, to, value, data,chainId } = rawTx
+        let gasLimit =  await web3.eth.estimateGas({ to, from, value, data })
+        const avalanche = new Avalanche(
+            chainId == 43114 ? "api.avax.network" : "api.avax-test.network",
+            undefined,
+            "https",
+            chainId
+        );
+        const cchain = avalanche.CChain();
+
+        let baseFee = parseInt(await cchain.getBaseFee(), 16) / 1e9
+
+        let maxPriorityFeePerGas = parseInt(await cchain.getMaxPriorityFeePerGas(), 16) / 1e9
+        let maxFeePerGas = baseFee + maxPriorityFeePerGas;
+
+        if (maxFeePerGas < maxPriorityFeePerGas) {
+            throw "Error: Max fee per gas cannot be less than max priority fee per gas"
+        }
+
+        return {
+            gasLimit,
+            fees:{
+            maxFeePerGas:maxFeePerGas,
+            maxPriorityFeePerGas:maxPriorityFeePerGas,
+            baseFee:baseFee
+            }
+        }
     }
+   
 }
 
 const getBalance = async (address, web3) => {
