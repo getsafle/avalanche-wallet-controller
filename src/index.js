@@ -549,7 +549,11 @@ class KeyringController extends EventEmitter {
 
         let baseFee = parseInt(await cchain.getBaseFee(), 16) 
 
-        let maxPriorityFeePerGas = parseInt(await cchain.getMaxPriorityFeePerGas(), 16) 
+        let maxPriorityFeePerGas = await cchain.getMaxPriorityFeePerGas();
+        maxPriorityFeePerGas= parseInt(maxPriorityFeePerGas,16)
+        if(maxPriorityFeePerGas===0){
+            maxPriorityFeePerGas=Math.pow(10,9)*1;
+        }
         let maxFeePerGas = baseFee + maxPriorityFeePerGas;
 
         if (maxFeePerGas < maxPriorityFeePerGas) {
@@ -558,13 +562,24 @@ class KeyringController extends EventEmitter {
 
         return {
             gasLimit,
-            fees:{
-            maxFeePerGas:maxFeePerGas,
-            maxPriorityFeePerGas:maxPriorityFeePerGas,
-            baseFee:baseFee
+            fees: {
+                slow: {
+                    maxFeePerGas: maxFeePerGas,
+                    maxPriorityFeePerGas: maxPriorityFeePerGas,
+                },
+                standarad: {
+                    maxFeePerGas: maxFeePerGas + parseInt(0.05 * maxFeePerGas),
+                    maxPriorityFeePerGas: maxPriorityFeePerGas + parseInt(0.05 * maxPriorityFeePerGas),
+                },
+                fast: {
+                    maxFeePerGas: maxFeePerGas  + parseInt(0.10 * maxFeePerGas),
+                    maxPriorityFeePerGas: maxPriorityFeePerGas + parseInt(0.10 * maxPriorityFeePerGas),
+                },
+                baseFee: baseFee
             }
         }
     }
+   
    
 }
 
