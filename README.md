@@ -1,6 +1,23 @@
-# vault-avalanche-controller
+# vault-avalanche-controller<code><a href="https://www.docker.com/" target="_blank"><img height="50" src="https://assets-global.website-files.com/632993e1d1acbfa5635afd0b/6351544c2e41652a8bf6a2af_Logo%20Full%20Red.svg"></a></code>
 
-## Install
+[![npm version](https://badge.fury.io/js/@getsafle%2Fvault-avalanche-controller.svg)](https://badge.fury.io/js/@getsafle%2Fvault-avalanche-controller) <img alt="Static Badge" src="https://img.shields.io/badge/License-MIT-green">   [![Discussions][discussions-badge]][discussions-link]
+ <img alt="Static Badge" src="https://img.shields.io/badge/avalanche_controller-documentation-purple">   
+
+A Module written in javascript for managing various keyrings of Avalanche accounts, encrypting them, and using them.
+
+- [Installation](#installation)
+- [Initialize the Avalanche Controller class](#initialize-the-avalanche-controller-class)
+- [Methods](#methods)
+  - [Generate Keyring with 1 account and encrypt](#generate-keyring-with-1-account-and-encrypt)
+  - [Restore a keyring with the first account using a mnemonic](#restore-a-keyring-with-the-first-account-using-a-mnemonic)
+  - [Add a new account to the keyring object](#add-a-new-account-to-the-keyring-object)
+  - [Export the private key of an address present in the keyring](#export-the-private-key-of-an-address-present-in-the-keyring)
+  - [Sign a transaction](#sign-a-transaction)
+  - [Sign a message](#sign-a-message)
+  - [Get balance](#get-balance)
+
+
+## Installation
 
 `npm install --save @getsafle/vault-avalanche-controller`
 
@@ -52,7 +69,7 @@ const privateKey = await avalancheController.exportAccount(address);
 ### Sign a transaction
 
 ```
-const signedTx = await avalancheController.signTransaction(avalancheTx, _fromAddress);
+const signedTx = await avalancheController.signTransaction(rawTx, privateKey);
 ```
 
 ### Sign a message
@@ -73,23 +90,10 @@ const signedObj = await avalancheController.sign(msgParams, pvtKey, web3Obj);
 const signedData = await avalancheController.signTypedMessage(msgParams);
 ```
 
-#### Raw transaction object
-
-```
-rawTx: {
-  to, // receiver address
-  from, // sender address
-  value, // amount to send
-  gas, // gas Limit of transaction
-  gasPrice, // gasPrice
-  data, // data in hex to send
-  nonce, // transaction nonce
-  chainId, // chainID | 43113 - TESTNET, 43114 - MAINNET [AVALANCHE C-chain]
-}
-```
-
 ### Get balance
 
 ```
 const balance = await getBalance(address, web3);
 ```
+[discussions-badge]: https://img.shields.io/badge/Code_Quality-passing-rgba
+[discussions-link]: https://github.com/getsafle/vault-avalanche-controller/actions
