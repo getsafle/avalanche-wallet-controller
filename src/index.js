@@ -2,7 +2,8 @@
 const { EventEmitter } = require('events')
 const log = require('loglevel')
 const ethUtil = require('ethereumjs-util')
-const Tx = require('ethereumjs-tx');
+const { FeeMarketEIP1559Transaction } = require('@ethereumjs/tx');
+const { bufferToHex } = require('ethereumjs-util')
 
 const bip39 = require('bip39')
 const ObservableStore = require('obs-store')
@@ -11,6 +12,8 @@ const { normalize: normalizeAddress } = require('eth-sig-util')
 
 const SimpleKeyring = require('eth-simple-keyring')
 const HdKeyring = require('eth-hd-keyring')
+
+const Avalanche = require("avalanche").Avalanche;
 
 const keyringTypes = [
     SimpleKeyring,
@@ -230,7 +233,10 @@ class KeyringController extends EventEmitter {
 
     importWallet(_privateKey) {
         try {
-            const privateKey = ethUtil.toBuffer(_privateKey)
+            if (_privateKey.startsWith('0x')) {
+                _privateKey = _privateKey.slice(2)
+            }
+            const privateKey = Buffer.from(_privateKey, 'hex')
             if (!ethUtil.isValidPrivate(privateKey))
                 throw "Enter a valid private key"
 
@@ -240,32 +246,32 @@ class KeyringController extends EventEmitter {
         } catch (e) {
             return Promise.reject(e)
         }
-    }
+    }   
 
     //
     // SIGNING METHODS
     //
 
-    /**
+        /**
      * Sign Avalanche Transaction
      *
      * Signs an Avalanche transaction object.
      *
-     * @param {Object} avalancheTx - The transaction to sign.
-     * @param {Object} web3 - web3 object.
+     * @param {Object} rawTx - The transaction to sign.
      * @returns {string} The signed transaction raw string.
      */
 
-    async signTransaction(avalancheTx, privateKey) {
-        const tx = new Tx(avalancheTx);
+    async signTransaction(rawTx, privateKey) {
 
         const pkey = Buffer.from(privateKey, 'hex');
 
-        tx.sign(pkey);
+        const tx = FeeMarketEIP1559Transaction.fromTxData(rawTx);
 
-        const signedTx = `0x${tx.serialize().toString('hex')}`;
+        const signedTransaction = tx.sign(pkey);
 
-        return signedTx;
+        const signedTx = bufferToHex(signedTransaction.serialize());
+
+        return signedTx
     }
 
     /**
@@ -519,12 +525,62 @@ class KeyringController extends EventEmitter {
         }
     }
 
-    async getFees(avalancheTx, web3) {
-        const { from, to, value, data, gasLimit } = avalancheTx
-        const estimate = gasLimit ? gasLimit : await web3.eth.estimateGas({ to, from, value, data })
-        const gasPrice = await web3.eth.getGasPrice();
-        return { transactionFees: estimate * gasPrice }
+    /**
+     * get Fees method to get the fees for reqiured chainId for avalanche
+     *
+     * returns the object having gasLimit and fees for the block
+     *
+     * @param {Object} rawTx - Rawtransaction - {from,to,value,data}  
+     * @param {Object} web3 - web3 object.
+     * @returns {Object} - gasLimit for the transaction and {maxFeePerGas,maxPriorityFeePerGas} for the transaction
+     */
+
+    async getFees(rawTx, web3) {
+
+        const { from, to, value, data,chainId } = rawTx
+        let gasLimit =  await web3.eth.estimateGas({ to, from, value, data })
+        const avalanche = new Avalanche(
+            chainId == 43114 ? "api.avax.network" : "api.avax-test.network",
+            undefined,
+            "https",
+            chainId
+        );
+        const cchain = avalanche.CChain();
+
+        let baseFee = parseInt(await cchain.getBaseFee(), 16) 
+
+        let maxPriorityFeePerGas = await cchain.getMaxPriorityFeePerGas();
+        maxPriorityFeePerGas= parseInt(maxPriorityFeePerGas,16)
+        if(maxPriorityFeePerGas===0){
+            maxPriorityFeePerGas=Math.pow(10,9)*1;
+        }
+        let maxFeePerGas = baseFee + maxPriorityFeePerGas;
+
+        if (maxFeePerGas < maxPriorityFeePerGas) {
+            throw "Error: Max fee per gas cannot be less than max priority fee per gas"
+        }
+
+        return {
+            gasLimit,
+            fees: {
+                slow: {
+                    maxFeePerGas: maxFeePerGas,
+                    maxPriorityFeePerGas: maxPriorityFeePerGas,
+                },
+                standarad: {
+                    maxFeePerGas: maxFeePerGas + parseInt(0.05 * maxFeePerGas),
+                    maxPriorityFeePerGas: maxPriorityFeePerGas + parseInt(0.05 * maxPriorityFeePerGas),
+                },
+                fast: {
+                    maxFeePerGas: maxFeePerGas  + parseInt(0.10 * maxFeePerGas),
+                    maxPriorityFeePerGas: maxPriorityFeePerGas + parseInt(0.10 * maxPriorityFeePerGas),
+                },
+                baseFee: baseFee
+            }
+        }
     }
+   
+   
 }
 
 const getBalance = async (address, web3) => {

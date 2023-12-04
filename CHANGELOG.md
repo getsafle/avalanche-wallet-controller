@@ -21,3 +21,18 @@
 ##### Implement sign functionality
 
 - Added sign() to sign a message or transaction and get signature along with v,r,s.
+
+
+### 1.2.1 (2023-11-28)
+
+##### Implemented Type2 Transaction Signing and Updated readme
+
+- Updated signTransaction() to sign type 2 transactions.
+
+- Updated README.md and added badges. 
+
+- Updated getFees() method for gas estimation for type-2 transaction.
+
+- Added the tests for getFees() in test suite. 
+
+- Updated import wallet with Ox prefix slicing.
