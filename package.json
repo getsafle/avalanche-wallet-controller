@@ -1,6 +1,6 @@
 {
   "name": "@getsafle/vault-avalanche-controller",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Avalanche controller for safle vault.",
   "engines": {
     "node": ">= 10"
@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@avalabs/avalanchejs": "^3.17.0",
-    "@ethereumjs/tx": "^5.1.0",
+    "@ethereumjs/tx": "^3.4.0",
     "avalanche": "^3.16.0",
     "bip39": "^3.0.4",
     "browser-passworder": "^2.0.3",

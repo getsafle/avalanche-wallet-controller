@@ -36,3 +36,7 @@
 - Added the tests for getFees() in test suite. 
 
 - Updated import wallet with Ox prefix slicing.
+
+### 1.2.2 (2024-02-14)
+
+- Downgraded ethereumjs module to 3.4.0 version.
